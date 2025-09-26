@@ -1,0 +1,63 @@
+[
+  {
+    "api_name": "runcircuit",
+    "library": "PastaQ",
+    "signature": "runcircuit(ψ0::MPS, circuit::Vector) -> MPS",
+    "description": "Execute a quantum circuit on an initial MPS state. Core function for running parameterized quantum algorithms and gate sequences.",
+    "parameters": {
+      "ψ0": "Initial MPS state to evolve",
+      "circuit": "Vector of gate tuples: [(\"GateName\", site, params), ...]"
+    },
+    "returns": "Final MPS state after applying all gates in the circuit",
+    "example": "circuit = [(\"H\", 1), (\"CNOT\", 1, 2), (\"Rx\", 2, (θ=π/4,))]; ψ = runcircuit(ψ0, circuit)",
+    "usage_context": "variational quantum algorithms, quantum circuit simulation, VQE ansatz execution, parameterized circuits",
+    "related_apis": ["productMPS", "expect", "inner", "normalize!"],
+    "common_pitfalls": "Gate parameters use named tuples (θ=value,); ensure initial state has correct number of sites; gates applied sequentially"
+  },
+  {
+    "api_name": "gate",
+    "library": "PastaQ",
+    "signature": "gate(gatename::String, sites...; params...) -> Tuple",
+    "description": "Create a gate tuple for quantum circuits. Helper function for building circuit gate lists with proper formatting.",
+    "parameters": {
+      "gatename": "Name of quantum gate: \"H\", \"X\", \"Y\", \"Z\", \"Rx\", \"Ry\", \"Rz\", \"CNOT\", etc.",
+      "sites": "Site indices where gate acts (1 or 2 sites depending on gate)",
+      "params": "Gate parameters for parameterized gates (angles, etc.)"
+    },
+    "returns": "Properly formatted gate tuple for circuit construction",
+    "example": "h_gate = gate(\"H\", 1); rx_gate = gate(\"Rx\", 2; θ=π/3); cnot_gate = gate(\"CNOT\", 1, 2)",
+    "usage_context": "circuit construction, gate sequence building, parameterized quantum algorithms",
+    "related_apis": ["runcircuit", "randomcircuit", "circuitdepth"],
+    "common_pitfalls": "Parameter syntax varies by gate type; CNOT requires two sites; rotation gates need angle parameters"
+  },
+  {
+    "api_name": "gateops",
+    "library": "PastaQ",
+    "signature": "gateops(gatename::String) -> String",
+    "description": "Get available gate operations and their parameter requirements. Utility for understanding gate interfaces and building circuits.",
+    "parameters": {
+      "gatename": "Name of gate to query, or \"all\" for complete list"
+    },
+    "returns": "String describing gate parameters and usage",
+    "example": "println(gateops(\"Rx\")); println(gateops(\"all\"))",
+    "usage_context": "circuit design, gate parameter reference, algorithm development",
+    "related_apis": ["gate", "runcircuit", "applycircuit"],
+    "common_pitfalls": "Gate names are case-sensitive; not all gates available in all contexts"
+  },
+  {
+    "api_name": "randomcircuit",
+    "library": "PastaQ",
+    "signature": "randomcircuit(sites, depth::Int; kwargs...) -> Vector",
+    "description": "Generate a random quantum circuit for benchmarking and algorithm testing. Useful for creating test circuits and random initial states.",
+    "parameters": {
+      "sites": "Vector of site indices or number of qubits",
+      "depth": "Number of circuit layers to generate",
+      "kwargs": "Options: gate types to include, parameter ranges, circuit structure"
+    },
+    "returns": "Vector of gate tuples representing the random circuit",
+    "example": "circuit = randomcircuit(sites, 10); random_state = runcircuit(ψ0, circuit)",
+    "usage_context": "benchmarking, random state preparation, algorithm testing, circuit sampling",
+    "related_apis": ["runcircuit", "gate", "circuitdepth"],
+    "common_pitfalls": "Random circuits can have high entanglement; may require large bond dimensions for accurate simulation"
+  }
+]

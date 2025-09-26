@@ -1,0 +1,68 @@
+[
+  {
+    "api_name": "LBFGS",
+    "library": "OptimKit",
+    "signature": "LBFGS(; maxiter=100, gradtol=1e-6, verbosity=0, kwargs...) -> LBFGSOptimizer",
+    "description": "Limited-memory Broyden-Fletcher-Goldfarb-Shanno optimizer. Quasi-Newton method ideal for variational quantum algorithms with many parameters.",
+    "parameters": {
+      "maxiter": "Maximum number of optimization iterations",
+      "gradtol": "Gradient tolerance for convergence criteria",
+      "verbosity": "Verbosity level: 0 (silent), 1 (basic), 2 (detailed)",
+      "kwargs": "Additional options: linesearch, m (memory size), etc."
+    },
+    "returns": "LBFGS optimizer instance ready for use with optimize()",
+    "example": "optimizer = LBFGS(maxiter=200, gradtol=1e-8, verbosity=1)",
+    "usage_context": "VQE optimization, parameter optimization, variational algorithms, machine learning",
+    "related_apis": ["optimize", "ConjugateGradient", "GradientDescent"],
+    "common_pitfalls": "Requires gradient information; memory usage scales with parameter count; may get stuck in local minima"
+  },
+  {
+    "api_name": "optimize",
+    "library": "OptimKit",
+    "signature": "optimize(f, x0, optimizer; kwargs...) -> result",
+    "description": "Run optimization algorithm on a function. Core interface for parameter optimization in quantum algorithms.",
+    "parameters": {
+      "f": "Function to optimize: can return just value f(x) or tuple (f(x), grad) for gradient",
+      "x0": "Initial parameter vector",
+      "optimizer": "Optimizer instance (LBFGS, ConjugateGradient, etc.)",
+      "kwargs": "Additional options specific to optimizer"
+    },
+    "returns": "Optimization result containing final parameters, value, convergence info",
+    "example": "result = optimize(loss_and_grad, initial_params, LBFGS(maxiter=100))",
+    "usage_context": "VQE energy minimization, parameter fitting, variational optimization, cost function minimization",
+    "related_apis": ["LBFGS", "ConjugateGradient", "GradientDescent"],
+    "common_pitfalls": "Function must return consistent types; ensure gradients are correctly computed; monitor convergence"
+  },
+  {
+    "api_name": "ConjugateGradient",
+    "library": "OptimKit",
+    "signature": "ConjugateGradient(; maxiter=100, gradtol=1e-6, verbosity=0) -> CGOptimizer",
+    "description": "Conjugate Gradient optimizer. Memory-efficient alternative to LBFGS for large parameter spaces.",
+    "parameters": {
+      "maxiter": "Maximum number of optimization iterations",
+      "gradtol": "Gradient tolerance for convergence",
+      "verbosity": "Verbosity level for optimization output"
+    },
+    "returns": "ConjugateGradient optimizer instance",
+    "example": "optimizer = ConjugateGradient(maxiter=150, gradtol=1e-7)",
+    "usage_context": "large parameter optimization, memory-constrained systems, linear systems, quadratic functions",
+    "related_apis": ["optimize", "LBFGS", "GradientDescent"],
+    "common_pitfalls": "Works best for quadratic functions; may converge slowly on non-convex problems; requires gradient"
+  },
+  {
+    "api_name": "GradientDescent",
+    "library": "OptimKit",
+    "signature": "GradientDescent(; stepsize=0.01, maxiter=100, gradtol=1e-6) -> GDOptimizer",
+    "description": "Simple gradient descent optimizer. Basic first-order optimization method with configurable step size.",
+    "parameters": {
+      "stepsize": "Learning rate / step size for parameter updates",
+      "maxiter": "Maximum number of optimization iterations",
+      "gradtol": "Gradient tolerance for convergence"
+    },
+    "returns": "GradientDescent optimizer instance",
+    "example": "optimizer = GradientDescent(stepsize=0.1, maxiter=1000)",
+    "usage_context": "simple optimization problems, debugging, educational purposes, when other methods fail",
+    "related_apis": ["optimize", "LBFGS", "ConjugateGradient"],
+    "common_pitfalls": "Step size critical for convergence; may be slow; can oscillate with large step sizes"
+  }
+]

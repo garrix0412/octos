@@ -1,0 +1,76 @@
+[
+  {
+    "api_name": "productMPS",
+    "library": "ITensors",
+    "signature": "productMPS(sites::Vector{<:Index}, states) -> MPS",
+    "description": "Create a Matrix Product State (MPS) in a specified product state. Essential for initializing quantum systems to specific product states, commonly used as starting points for variational algorithms.",
+    "parameters": {
+      "sites": "Vector of ITensor indices defining the sites of the quantum system",
+      "states": "String or vector of strings specifying the initial state for each site (e.g., '0', '1', 'Up', 'Down')"
+    },
+    "returns": "MPS object representing the specified quantum product state",
+    "example": "sites = siteinds(\"S=1/2\", 4); psi = productMPS(sites, [\"Up\", \"Down\", \"Up\", \"Down\"])",
+    "usage_context": "quantum algorithm initialization, variational algorithm starting states, benchmark state construction, VQE initial states",
+    "related_apis": ["randomMPS", "siteinds", "orthogonalize!", "normalize!"],
+    "common_pitfalls": "Ensure sites array length matches states array length; note Julia uses 1-based indexing; state strings must match the site type"
+  },
+  {
+    "api_name": "siteinds",
+    "library": "ITensors",
+    "signature": "siteinds(sitetype::String, N::Int; kwargs...) -> Vector{Index}",
+    "description": "Create a vector of ITensor indices for quantum sites. Fundamental function for setting up quantum systems in ITensors framework.",
+    "parameters": {
+      "sitetype": "Type of quantum site: \"S=1/2\" for spin-1/2, \"Qubit\" for qubits, \"Fermion\" for fermions",
+      "N": "Number of sites to create",
+      "kwargs": "Optional keyword arguments like conserve_qns for quantum number conservation"
+    },
+    "returns": "Vector of Index objects representing the quantum sites",
+    "example": "sites = siteinds(\"S=1/2\", 4); qubit_sites = siteinds(\"Qubit\", 6)",
+    "usage_context": "MPS initialization, quantum circuit construction, Hamiltonian building, all ITensors quantum algorithms",
+    "related_apis": ["productMPS", "randomMPS", "MPO", "OpSum"],
+    "common_pitfalls": "Choose correct sitetype for your quantum model; site types affect available gate operations; indices are immutable once created"
+  },
+  {
+    "api_name": "orthogonalize!",
+    "library": "ITensors",
+    "signature": "orthogonalize!(M::MPS, j::Int) -> MPS",
+    "description": "Orthogonalize an MPS by moving the orthogonality center to site j. Essential for efficient MPS operations and maintaining numerical stability.",
+    "parameters": {
+      "M": "MPS to orthogonalize (modified in-place)",
+      "j": "Site index where to place the orthogonality center (1-based indexing)"
+    },
+    "returns": "The input MPS, modified in-place with orthogonality center at site j",
+    "example": "orthogonalize!(psi, 3); # Center is now at site 3",
+    "usage_context": "before applying local gates, expectation value calculations, MPS compression, SVD operations",
+    "related_apis": ["normalize!", "apply", "inner", "expect"],
+    "common_pitfalls": "Function modifies MPS in-place; ensure j is within valid range [1, length(M)]; orthogonalization affects gauge"
+  },
+  {
+    "api_name": "normalize!",
+    "library": "ITensors",
+    "signature": "normalize!(M::MPS) -> MPS",
+    "description": "Normalize an MPS to unit norm. Crucial for maintaining proper quantum state normalization during algorithms.",
+    "parameters": {
+      "M": "MPS to normalize (modified in-place)"
+    },
+    "returns": "The input MPS, modified in-place with unit norm",
+    "example": "normalize!(psi); # psi now has norm 1",
+    "usage_context": "after applying gates, during time evolution, in variational algorithms, maintaining numerical stability",
+    "related_apis": ["orthogonalize!", "apply", "inner", "norm"],
+    "common_pitfalls": "Function modifies MPS in-place; avoid normalizing zero states; numerical precision can be affected by very small norms"
+  },
+  {
+    "api_name": "maxlinkdim",
+    "library": "ITensors",
+    "signature": "maxlinkdim(M::MPS) -> Int",
+    "description": "Get the maximum bond dimension (link dimension) of an MPS. Important for monitoring computational complexity and entanglement.",
+    "parameters": {
+      "M": "MPS whose maximum link dimension to compute"
+    },
+    "returns": "Integer representing the maximum bond dimension across all bonds",
+    "example": "max_chi = maxlinkdim(psi); println(\"Max bond dimension: $max_chi\")",
+    "usage_context": "monitoring MPS compression, checking algorithm convergence, performance analysis, entanglement measures",
+    "related_apis": ["linkdims", "truncate!", "svd"],
+    "common_pitfalls": "Large bond dimensions indicate high entanglement but also high computational cost; monitor to avoid memory issues"
+  }
+]

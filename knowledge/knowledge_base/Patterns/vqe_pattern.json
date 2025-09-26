@@ -1,0 +1,36 @@
+{
+  "api_name": "VQEManualImplementation",
+  "library": "Patterns",
+  "signature": "VQEManualImplementation(; hamiltonian_builder, ansatz_constructor, optimizer, expectation_estimator)",
+  "description": "Design pattern for hand-writing a Variational Quantum Eigensolver in Julia using ITensors and OptimKit.",
+  "parameters": {
+    "hamiltonian_builder": "Function that returns an MPO or operator list describing the target Hamiltonian.",
+    "ansatz_constructor": "Function building a parameterized state (MPS or circuit) returning both state and differentiable parameters.",
+    "optimizer": "OptimKit Optimizer or custom gradient loop responsible for parameter updates.",
+    "expectation_estimator": "Function that computes expectation value <psi|H|psi> and optionally gradients (parameter-shift or autodiff)."
+  },
+  "returns": "Energy estimate, optimized parameters, diagnostic information (iterations, gradient norms).",
+  "example": """
+using ITensors, OptimKit
+
+function run_vqe(; params0, build_h, build_ansatz, estimator, maxiter=200)
+    H = build_h()
+    θ = copy(params0)
+    function cost_fun(θ_vec)
+        state, cache = build_ansatz(θ_vec)
+        energy, grad = estimator(state, cache, H)
+        return energy, grad
+    end
+    result = optimize(cost_fun, θ; optimizer = LBFGS(), maxiter)
+    return result.minimum, result.minimizer, result.metadata
+end
+""",
+  "usage_context": "When Python code relies on VQE.run or Estimator primitives, Julia engineers must recompose the Hamiltonian builder, ansatz generator, expectation evaluator, and optimization driver manually.",
+  "related_apis": [
+    "OptimKit.optimize!",
+    "ITensors.expect",
+    "ITensors.op",
+    "ITensors.MPO"
+  ],
+  "common_pitfalls": "Ensure gradients match parameter conventions; maintain MPS orthogonality after gate applications; keep optimizer tolerances aligned with Python reference."
+}

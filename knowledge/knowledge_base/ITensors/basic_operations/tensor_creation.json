@@ -1,0 +1,75 @@
+[
+  {
+    "api_name": "ITensor",
+    "library": "ITensors",
+    "signature": "ITensor(data::Array, inds::Index...) -> ITensor",
+    "description": "Create an ITensor from numerical data and indices. Core constructor for building quantum gates, operators, and state vectors.",
+    "parameters": {
+      "data": "Numerical array containing tensor elements (can be Float64, ComplexF64, etc.)",
+      "inds": "Variable number of Index objects defining tensor structure and connectivity"
+    },
+    "returns": "ITensor object with specified data and index structure",
+    "example": "gate_data = [1.0 0.0; 0.0 -1.0]; z_gate = ITensor(gate_data, sites[1]', sites[1])",
+    "usage_context": "quantum gate construction, operator building, custom tensor creation, measurement operators",
+    "related_apis": ["prime", "dag", "noprime", "apply"],
+    "common_pitfalls": "Index order matters for tensor contractions; use prime() for distinguishing input/output indices; data array shape must match indices"
+  },
+  {
+    "api_name": "OpSum",
+    "library": "ITensors",
+    "signature": "OpSum() -> OpSum",
+    "description": "Create an empty operator sum for building Hamiltonians and other quantum operators. Essential for constructing complex quantum operators from local terms.",
+    "parameters": {},
+    "returns": "Empty OpSum object ready for adding operator terms",
+    "example": "H = OpSum(); H += -1.0, \"X\", 1; H += -0.5, \"Z\", 1, \"Z\", 2",
+    "usage_context": "Hamiltonian construction, operator building, VQE algorithms, quantum many-body systems",
+    "related_apis": ["MPO", "apply", "expect", "inner"],
+    "common_pitfalls": "Use += to add terms, not =; coefficient comes first in term specification; site indices are 1-based"
+  },
+  {
+    "api_name": "MPO",
+    "library": "ITensors",
+    "signature": "MPO(ampo::OpSum, sites::Vector{<:Index}) -> MPO",
+    "description": "Convert an OpSum into a Matrix Product Operator (MPO). Transforms symbolic operator expressions into efficient tensor network form.",
+    "parameters": {
+      "ampo": "OpSum containing the operator terms to convert",
+      "sites": "Vector of site indices defining the Hilbert space"
+    },
+    "returns": "MPO representing the operator in tensor network form",
+    "example": "H = OpSum(); H += \"Z\", 1, \"Z\", 2; H_mpo = MPO(H, sites)",
+    "usage_context": "Hamiltonian representation, time evolution, expectation value calculations, operator applications",
+    "related_apis": ["OpSum", "apply", "expect", "inner", "siteinds"],
+    "common_pitfalls": "Sites vector must match the sites referenced in OpSum; large operators may have high bond dimensions"
+  },
+  {
+    "api_name": "inner",
+    "library": "ITensors",
+    "signature": "inner(psi1::MPS, psi2::MPS) -> ComplexF64",
+    "description": "Compute the inner product ⟨psi1|psi2⟩ between two MPS states. Fundamental operation for quantum state overlaps and norm calculations.",
+    "parameters": {
+      "psi1": "First MPS state (will be complex conjugated)",
+      "psi2": "Second MPS state"
+    },
+    "returns": "Complex number representing the inner product ⟨psi1|psi2⟩",
+    "example": "overlap = inner(psi1, psi2); energy = real(inner(psi', H, psi))",
+    "usage_context": "expectation value calculations, state overlaps, norm computations, fidelity measurements",
+    "related_apis": ["expect", "apply", "normalize!", "dag"],
+    "common_pitfalls": "Order matters: inner(A,B) ≠ inner(B,A) for complex states; use real() for Hermitian expectation values"
+  },
+  {
+    "api_name": "apply",
+    "library": "ITensors",
+    "signature": "apply(o::MPO, psi::MPS; kwargs...) -> MPS",
+    "description": "Apply an MPO operator to an MPS state: o|psi⟩. Core operation for time evolution, gate applications, and operator actions.",
+    "parameters": {
+      "o": "MPO operator to apply",
+      "psi": "MPS state to apply operator to",
+      "kwargs": "Options like maxdim for bond dimension control, cutoff for truncation"
+    },
+    "returns": "New MPS representing o|psi⟩",
+    "example": "psi_new = apply(H_mpo, psi; maxdim=100, cutoff=1e-10)",
+    "usage_context": "time evolution, gate applications, operator expectation values, quantum algorithms",
+    "related_apis": ["MPO", "inner", "truncate!", "orthogonalize!"],
+    "common_pitfalls": "Result may have increased bond dimension; use maxdim and cutoff to control; consider orthogonalization for efficiency"
+  }
+]

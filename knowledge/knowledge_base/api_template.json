@@ -1,0 +1,16 @@
+{
+  "api_name": "functionName",
+  "library": "ITensors|PastaQ|OptimKit",
+  "signature": "functionName(param1::Type1, param2::Type2; keyword::Type3=default) -> ReturnType",
+  "description": "Clear description of what this function does, focusing on its purpose in quantum computing context",
+  "parameters": {
+    "param1": "Description of first parameter, its meaning and expected values",
+    "param2": "Description of second parameter",
+    "keyword": "Description of keyword parameter with default value"
+  },
+  "returns": "Description of what the function returns and its meaning",
+  "example": "sites = siteinds(\"S=1/2\", 4); result = functionName(sites, param)",
+  "usage_context": "When to use this function: variational algorithms, MPS operations, quantum circuits, optimization",
+  "related_apis": ["relatedFunction1", "relatedFunction2", "relatedFunction3"],
+  "common_pitfalls": "Important notes about common mistakes, performance considerations, or Julia-specific behaviors"
+}

@@ -1,0 +1,33 @@
+{
+  "api_name": "ParameterShiftGradient",
+  "library": "Patterns",
+  "signature": "ParameterShiftGradient(ansatz, observable; shift=pi/2)",
+  "description": "Technique to compute gradients of expectation values for parameterized quantum circuits by evaluating shifted parameter sets.",
+  "parameters": {
+    "ansatz": "Callable that prepares the state given parameter vector θ.",
+    "observable": "Hamiltonian or MPO used to evaluate expectation.",
+    "shift": "Shift angle applied to each parameter when computing gradients (default π/2)."
+  },
+  "returns": "Gradient vector of the expectation value with respect to parameters.",
+  "example": """
+function parameter_shift_gradient(ansatz, θ, observable)
+    grads = similar(θ)
+    for k in eachindex(θ)
+        θ_plus = copy(θ); θ_plus[k] += pi/2
+        θ_minus = copy(θ); θ_minus[k] -= pi/2
+        ψ_plus = ansatz(θ_plus)
+        ψ_minus = ansatz(θ_minus)
+        e_plus = expectation(observable, ψ_plus)
+        e_minus = expectation(observable, ψ_minus)
+        grads[k] = 0.5 * (e_plus - e_minus)
+    end
+    return grads
+end
+""",
+  "usage_context": "When Python leverages automatic gradients (e.g., qiskit.algorithms.VQE) the Julia version must explicitly compute gradients using parameter-shift or alternative estimators.",
+  "related_apis": [
+    "ITensors.expect",
+    "LinearAlgebra.norm"
+  ],
+  "common_pitfalls": "Keep copies of the MPS orthogonal center consistent; reuse caches to avoid recomputation overhead."
+}

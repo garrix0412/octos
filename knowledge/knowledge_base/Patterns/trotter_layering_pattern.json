@@ -1,0 +1,40 @@
+{
+  "api_name": "TrotterGateLayering",
+  "library": "Patterns",
+  "signature": "TrotterGateLayering(edges::Vector{Tuple{Int,Int}}, steps::Int; schedule=:greedy)",
+  "description": "Pattern describing how to partition ZZ interactions into conflict-free layers and apply them within a Trotterized evolution.",
+  "parameters": {
+    "edges": "Interaction graph edges (0- or 1-indexed) that must be partitioned into parallelizable layers.",
+    "steps": "Number of Trotter slices; each slice executes RX layer followed by layered ZZ gates.",
+    "schedule": "Layering heuristic (greedy, coloring, distance-aware) controlling parallel execution choices."
+  },
+  "returns": "Ordered vector of edge layers or a callable that yields layers on demand.",
+  "example": """
+function partition_edges_to_layers(edges::Vector{Tuple{Int,Int}})
+    remaining = Set(edges)
+    layers = Vector{Vector{Tuple{Int,Int}}}()
+    while !isempty(remaining)
+        layer = Tuple{Int,Int}[]
+        used = Set{Int}()
+        for edge in collect(remaining)
+            i, j = edge
+            if !(i in used || j in used)
+                push!(layer, edge)
+                push!(used, i)
+                push!(used, j)
+                delete!(remaining, edge)
+            end
+        end
+        push!(layers, layer)
+    end
+    return layers
+end
+""",
+  "usage_context": "Use when translating Python circuits that rely on QuantumCircuit.rzz with automatic scheduling; Julia implementations must recreate layering to preserve parallel gate application and reduce circuit depth.",
+  "related_apis": [
+    "ITensors.apply",
+    "Base.Iterators.partition",
+    "Base.Threads.@threads"
+  ],
+  "common_pitfalls": "Remember Python edges are 0-indexed; convert before layering. Preserve deterministic ordering for reproducible diagnostics."
+}

@@ -1,0 +1,78 @@
+[
+  {
+    "api_name": "svd",
+    "library": "ITensors",
+    "signature": "svd(T::ITensor, inds::Index...; kwargs...) -> U, S, V",
+    "description": "Perform Singular Value Decomposition of an ITensor. Essential for MPS compression, gate applications, and tensor network operations.",
+    "parameters": {
+      "T": "ITensor to decompose",
+      "inds": "Indices that will belong to the U tensor (remaining indices go to V)",
+      "kwargs": "Options: maxdim for maximum bond dimension, cutoff for truncation threshold"
+    },
+    "returns": "Three ITensors: U (left unitary), S (singular values), V (right unitary)",
+    "example": "U, S, V = svd(wf, left_inds; maxdim=64, cutoff=1e-10)",
+    "usage_context": "MPS compression, two-site gate applications, entanglement analysis, tensor factorization",
+    "related_apis": ["qr", "eigen", "apply", "truncate!"],
+    "common_pitfalls": "Index specification determines tensor structure; truncation affects accuracy; monitor singular value decay"
+  },
+  {
+    "api_name": "expect",
+    "library": "ITensors",
+    "signature": "expect(psi::MPS, op::String; sites=i) -> Float64 or expect(psi::MPS, op::String) -> Vector{Float64}",
+    "description": "Compute expectation values of local operators on MPS states. Efficient calculation of quantum observables without full state construction.",
+    "parameters": {
+      "psi": "MPS state to measure",
+      "op": "Operator name as string: \"X\", \"Y\", \"Z\", \"Sx\", \"Sy\", \"Sz\", \"S+\", \"S-\", etc.",
+      "sites": "Keyword argument specifying site index where to measure (single site). If omitted, measures all sites."
+    },
+    "returns": "Float64 for single site measurement, Vector{Float64} for all sites measurement",
+    "example": "mz_single = expect(psi, \"Sz\"; sites=1); mz_all = expect(psi, \"Sz\")",
+    "usage_context": "measuring quantum observables, magnetization calculations, single-site measurements, state characterization",
+    "related_apis": ["inner", "apply", "correlation_matrix"],
+    "common_pitfalls": "Use keyword argument sites=i for single site; operator strings are case-sensitive; Sz for Z-component, not Z"
+  },
+  {
+    "api_name": "prime",
+    "library": "ITensors",
+    "signature": "prime(T::ITensor, inds::Index...) -> ITensor",
+    "description": "Add prime levels to specified indices of an ITensor. Essential for distinguishing input and output indices in tensor operations.",
+    "parameters": {
+      "T": "ITensor whose indices to prime",
+      "inds": "Specific indices to prime (if none given, primes all indices)"
+    },
+    "returns": "New ITensor with primed indices",
+    "example": "T_primed = prime(T, site_ind); gate = ITensor(data, sites[i]', sites[i])",
+    "usage_context": "quantum gate construction, tensor contractions, operator building, index management",
+    "related_apis": ["noprime", "dag", "ITensor", "swapprime"],
+    "common_pitfalls": "Primed and unprimed indices are different; use noprime() to remove primes; essential for correct contractions"
+  },
+  {
+    "api_name": "noprime",
+    "library": "ITensors",
+    "signature": "noprime(T::ITensor, inds::Index...) -> ITensor",
+    "description": "Remove prime levels from specified indices of an ITensor. Used after tensor operations to clean up index structure.",
+    "parameters": {
+      "T": "ITensor whose indices to unprime",
+      "inds": "Specific indices to unprime (if none given, unprimes all indices)"
+    },
+    "returns": "New ITensor with unprimed indices",
+    "example": "result = noprime(gate * psi[j]); final_state = noprime(evolved_state)",
+    "usage_context": "after gate applications, cleaning tensor contractions, finalizing MPS operations",
+    "related_apis": ["prime", "swapprime", "apply", "ITensor"],
+    "common_pitfalls": "Must match index priming structure; commonly used after applying gates to MPS tensors"
+  },
+  {
+    "api_name": "dag",
+    "library": "ITensors",
+    "signature": "dag(T::ITensor) -> ITensor",
+    "description": "Compute the complex conjugate and transpose (Hermitian conjugate) of an ITensor. Essential for quantum operator constructions.",
+    "parameters": {
+      "T": "ITensor to take Hermitian conjugate of"
+    },
+    "returns": "ITensor representing the Hermitian conjugate of T",
+    "example": "bra = dag(ket); hermitian_op = 0.5 * (op + dag(op))",
+    "usage_context": "creating bra states from kets, Hermitian operator construction, inner product calculations",
+    "related_apis": ["inner", "expect", "prime", "noprime"],
+    "common_pitfalls": "Also transposes index structure; for MPS, typically apply to get ⟨psi| from |psi⟩"
+  }
+]
